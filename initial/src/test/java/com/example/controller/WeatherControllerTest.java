@@ -1,10 +1,35 @@
-/*@Bean
-	public CommandLineRunner commandLineRunner(RestTemplate restTemplate) {
-		return args-> {
-			String res = restTemplate.getForObject("http://api.openweathermap.org/data/2.5/weather?q=London&appid=31b787379973b52a0a8581043061f3ad",String.class);
-			logger.info(res);
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode node =objectMapper.readTree(res);
-			logger.info(node.get("main").get("temp").asText());
-		};
-	}*/
+package com.example.controller;
+
+import com.example.consumingrest.ConsumingRestApplication;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
+@SpringBootTest(classes = ConsumingRestApplication.class)
+@AutoConfigureMockMvc
+public class WeatherControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    WeatherController weatherController;
+
+    @Test
+    public void getWeatherTest() throws Exception{
+            this.mockMvc.perform(get("/getWeather?q=London")).andExpect(status().isOk());
+            this.mockMvc.perform(get("/getWeather?q=Shirala")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void convertTest() {
+       assertThat(weatherController.convert(277)).isEqualTo("38");
+       assertThat(weatherController.convert(302)).isEqualTo("83");
+    }
+
+
+}

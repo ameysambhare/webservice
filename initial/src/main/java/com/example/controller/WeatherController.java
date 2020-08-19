@@ -30,8 +30,8 @@ public class WeatherController {
             String res = restTemplate.getForObject(endpoint+"?q=" + city + "&appid="+key, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(res);
-            weather.setTemp(jsonNode.get("main").get("temp").asText());
-            weather.setFeels_like(jsonNode.get("main").get("feels_like").asText());
+            weather.setTemp(convert(jsonNode.get("main").get("temp").asInt()));
+            weather.setFeels_like(convert(jsonNode.get("main").get("feels_like").asInt()));
 
         }catch (Exception e) {
             return new ResponseEntity<WeatherReturn>(HttpStatus.NOT_FOUND);
@@ -39,5 +39,8 @@ public class WeatherController {
         return new ResponseEntity<WeatherReturn>(weather,HttpStatus.OK);
     }
 
+    public String convert(int kelvin ) {
+        return String.valueOf((int)(1.8*(kelvin-273.15)+32));
+    }
 
 }
